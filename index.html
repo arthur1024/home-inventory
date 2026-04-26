@@ -728,6 +728,7 @@
             <option>清潔用品</option>
             <option>洗髮沐浴</option>
             <option>口腔護理</option>
+            <option>保養品類</option>
             <option>食品飲料</option>
             <option>調味料</option>
             <option>廚房用品</option>
@@ -794,18 +795,19 @@ let currentFilter = 'all';
 
 // ── CATEGORY AUTO-DETECT ──
 const CAT_RULES = [
-  { keywords: ['衛生紙','面紙','抽取式','濕紙巾','廁紙'], cat: '衛生紙類' },
-  { keywords: ['洗碗','洗衣','漂白','除霉','清潔劑','拖把','掃把','地板','馬桶','浴廁'], cat: '清潔用品' },
-  { keywords: ['洗髮','潤髮','沐浴','肥皂','香皂','沐浴乳','洗髮乳'], cat: '洗髮沐浴' },
-  { keywords: ['牙膏','牙刷','漱口水','牙線','口腔'], cat: '口腔護理' },
+  { keywords: ['衛生紙','面紙','抽取式','濕紙巾','廁紙','舒潔','五月花','倍潔雅'], cat: '衛生紙類' },
+  { keywords: ['洗碗','洗衣','漂白','除霉','清潔劑','拖把','掃把','地板','馬桶','浴廁','百靈','魔術靈','花王'], cat: '清潔用品' },
+  { keywords: ['洗髮','潤髮','沐浴','肥皂','香皂','沐浴乳','洗髮乳','多芬','海倫仙度絲','飛柔','潘婷'], cat: '洗髮沐浴' },
+  { keywords: ['牙膏','牙刷','漱口水','牙線','口腔','黑人','舒酸定','高露潔'], cat: '口腔護理' },
+  { keywords: ['精華液','精華','化妝水','乳液','面霜','防曬','卸妝','化妝','眼霜','美白','保濕','凝霜','凝露','精油','面膜','敷臉','妝前','底妝','粉底','口紅','唇膏','睫毛膏','眼影','腮紅','保養'], cat: '保養品類' },
   { keywords: ['米','麵','油','鹽','醬油','味噌','醋','糖','醬','辣椒','胡椒'], cat: '調味料' },
-  { keywords: ['泡麵','餅乾','零食','糖果','巧克力','飲料','果汁','咖啡','茶','水','可樂'], cat: '食品飲料' },
-  { keywords: ['保鮮袋','保鮮膜','鋁箔','垃圾袋','廚房紙巾','烘焙紙'], cat: '廚房用品' },
-  { keywords: ['藥','OK繃','碘酒','消毒','棉花','體溫計','口罩','手套','維他命'], cat: '醫療藥品' },
-  { keywords: ['電池','燈泡','電燈','延長線'], cat: '電池電器' },
+  { keywords: ['泡麵','餅乾','零食','糖果','巧克力','飲料','果汁','咖啡','茶','可樂','礦泉水','牛奶','豆漿'], cat: '食品飲料' },
+  { keywords: ['保鮮袋','保鮮膜','鋁箔','垃圾袋','廚房紙巾','烘焙紙','夾鏈袋'], cat: '廚房用品' },
+  { keywords: ['藥','OK繃','碘酒','消毒','棉花','體溫計','口罩','手套','維他命','感冒','止痛','腸胃'], cat: '醫療藥品' },
+  { keywords: ['電池','燈泡','電燈','延長線','插座'], cat: '電池電器' },
   { keywords: ['原子筆','筆記本','膠帶','剪刀','釘書','印表'], cat: '文具辦公' },
-  { keywords: ['貓砂','狗糧','貓糧','寵物'], cat: '寵物用品' },
-  { keywords: ['尿布','奶粉','嬰兒','幼兒'], cat: '嬰幼兒用品' },
+  { keywords: ['貓砂','狗糧','貓糧','寵物','貓罐','狗罐'], cat: '寵物用品' },
+  { keywords: ['尿布','奶粉','嬰兒','幼兒','濕紙巾嬰兒'], cat: '嬰幼兒用品' },
 ];
 
 function detectCategory(name) {
@@ -820,22 +822,27 @@ function detectCategory(name) {
 function autoCategory() {
   const name = document.getElementById('f_name').value;
   const detected = detectCategory(name);
+  const catEl = document.getElementById('f_category');
   const el = document.getElementById('catSuggest');
-  if (detected && document.getElementById('f_category').value !== detected) {
-    document.getElementById('suggestText').textContent = detected;
-    el.style.display = 'block';
-    el.onclick = () => {
-      document.getElementById('f_category').value = detected;
-      el.style.display = 'none';
-    };
+  if (detected) {
+    if (catEl.value !== detected) {
+      catEl.value = detected;
+      // 顯示已自動填入的提示
+      document.getElementById('suggestText').textContent = detected;
+      el.style.display = 'block';
+      el.style.cursor = 'default';
+      el.innerHTML = `✅ 已自動辨識類別：<span style="text-decoration:none">${detected}</span>`;
+      el.onclick = null;
+    }
   } else {
     el.style.display = 'none';
+    // 只有在類別是自動填入的才清空，手動選的不動
   }
 }
 
 // ── CATEGORY ICON MAP ──
 const CAT_ICONS = {
-  '衛生紙類':'🧻','清潔用品':'🧹','洗髮沐浴':'🚿','口腔護理':'🦷',
+  '衛生紙類':'🧻','清潔用品':'🧹','洗髮沐浴':'🚿','口腔護理':'🦷','保養品類':'🧴',
   '食品飲料':'🥤','調味料':'🧂','廚房用品':'🍳','醫療藥品':'💊',
   '電池電器':'🔋','文具辦公':'✏️','寵物用品':'🐾','嬰幼兒用品':'👶','其他':'📦'
 };
